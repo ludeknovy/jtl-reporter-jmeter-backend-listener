@@ -1,20 +1,21 @@
     package jtlreporter;
 
-import java.io.IOException;
-import java.util.*;
+    import com.google.gson.Gson;
+    import jtlreporter.model.Constants;
+    import jtlreporter.model.JwtResponse;
+    import jtlreporter.model.StartAsyncResponse;
+    import org.apache.jmeter.config.Arguments;
+    import org.apache.jmeter.samplers.SampleResult;
+    import org.apache.jmeter.visualizers.backend.AbstractBackendListenerClient;
+    import org.apache.jmeter.visualizers.backend.BackendListenerContext;
+    import org.slf4j.Logger;
+    import org.slf4j.LoggerFactory;
+    import okhttp3.*;
 
-import jtlreporter.model.Constants;
-import jtlreporter.model.JwtResponse;
-import jtlreporter.model.StartAsyncResponse;
-import okhttp3.*;
-import org.apache.http.ssl.TrustStrategy;
-import org.apache.jmeter.config.Arguments;
-import org.apache.jmeter.samplers.SampleResult;
-import org.apache.jmeter.visualizers.backend.AbstractBackendListenerClient;
-import org.apache.jmeter.visualizers.backend.BackendListenerContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.google.gson.Gson;
+    import java.io.IOException;
+    import java.util.LinkedHashMap;
+    import java.util.List;
+    import java.util.Map;
 
 public class JtlReporterBackendClient extends AbstractBackendListenerClient {
 
@@ -40,8 +41,6 @@ public class JtlReporterBackendClient extends AbstractBackendListenerClient {
     private int bulkSize;
 
     private String itemId;
-
-    private static final TrustStrategy TRUST_ALL_STRATEGY = (chain, authType) -> true;
 
     @Override
     public Arguments getDefaultParameters() {
