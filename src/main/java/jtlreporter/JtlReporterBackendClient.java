@@ -3,6 +3,7 @@
 import java.io.IOException;
 import java.util.*;
 
+import jtlreporter.model.Constants;
 import jtlreporter.model.JwtResponse;
 import jtlreporter.model.StartAsyncResponse;
 import okhttp3.*;
@@ -17,7 +18,6 @@ import com.google.gson.Gson;
 
 public class JtlReporterBackendClient extends AbstractBackendListenerClient {
 
-    private static final String BUILD_NUMBER = "BuildNumber";
     private static final String JTL_BACKEND_URL = "jtlreporter.backend.url";
     private static final String JTL_LISTENER_SERVICE_URL = "jtlreporter.listener.service.url";
     private static final String JTL_API_TOKEN = "jtlreporter.api.token";
@@ -171,7 +171,7 @@ public class JtlReporterBackendClient extends AbstractBackendListenerClient {
         Request request = new Request.Builder()
                 .url(url)
                 .post(formBody)
-                .addHeader("x-access-token",  token)
+                .addHeader(Constants.X_ACCESS_TOKEN,  token)
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
@@ -198,7 +198,6 @@ public class JtlReporterBackendClient extends AbstractBackendListenerClient {
 
     private void stopTestRun(BackendListenerContext context, String itemId) {
         OkHttpClient client = new OkHttpClient();
-        logger.info("TEST ID " + itemId);
         String projectName = context.getParameter(JTL_PROJECT_NAME);
         String scenarioName = context.getParameter(JTL_SCENARIO_NAME);
         String token = context.getParameter(JTL_API_TOKEN);
@@ -210,7 +209,7 @@ public class JtlReporterBackendClient extends AbstractBackendListenerClient {
         Request request = new Request.Builder()
                 .url(url)
                 .post(formBody)
-                .addHeader("x-access-token",  token)
+                .addHeader(Constants.X_ACCESS_TOKEN,  token)
                 .build();
 
         try (Response response = client.newCall(request).execute()) {

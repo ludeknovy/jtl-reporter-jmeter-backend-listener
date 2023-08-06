@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.google.gson.Gson;
+import jtlreporter.model.Constants;
 import jtlreporter.model.LogSamplesBody;
 import jtlreporter.model.Sample;
 import okhttp3.*;
@@ -66,7 +67,7 @@ public class JtlReporterListenerService {
                 .url(listenerUrl + "/api/v2/test-run/log-samples")
                 .post(body)
                 .addHeader("Content-Type", "application/json")
-                .addHeader("x-access-token", jwtToken)
+                .addHeader(Constants.X_ACCESS_TOKEN, jwtToken)
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
