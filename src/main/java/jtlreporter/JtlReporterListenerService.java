@@ -59,7 +59,6 @@ public class JtlReporterListenerService {
 
         LogSamplesBody logSamplesBody = new LogSamplesBody(itemId, this.sampleList);
         String jsonString = gson.toJson(logSamplesBody, LogSamplesBody.class);
-        logger.info("json body " + jsonString);
 
         RequestBody body = RequestBody.create(jsonString, MediaType.parse("application/json"));
 

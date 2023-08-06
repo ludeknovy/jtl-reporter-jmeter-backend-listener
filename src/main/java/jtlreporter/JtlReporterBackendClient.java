@@ -3,7 +3,6 @@
 import java.io.IOException;
 import java.util.*;
 
-
 import jtlreporter.model.JwtResponse;
 import jtlreporter.model.StartAsyncResponse;
 import okhttp3.*;
@@ -14,8 +13,6 @@ import org.apache.jmeter.visualizers.backend.AbstractBackendListenerClient;
 import org.apache.jmeter.visualizers.backend.BackendListenerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.google.gson.Gson;
 
 public class JtlReporterBackendClient extends AbstractBackendListenerClient {
@@ -29,7 +26,6 @@ public class JtlReporterBackendClient extends AbstractBackendListenerClient {
     private static final String JTL_SCENARIO_NAME = "jtlreporter.scenario.name";
     private static final String JTL_ENVIRONMENT = "jtlreporter.environment";
     private static final Logger logger = LoggerFactory.getLogger(JtlReporterBackendClient.class);
-    private static final AWSCredentialsProvider credentialsProvider = new DefaultAWSCredentialsProviderChain();
     private static final Map<String, String> DEFAULT_ARGS = new LinkedHashMap<>();
     static {
         DEFAULT_ARGS.put(JTL_PROJECT_NAME, null);
@@ -38,7 +34,7 @@ public class JtlReporterBackendClient extends AbstractBackendListenerClient {
         DEFAULT_ARGS.put(JTL_BACKEND_URL, null);
         DEFAULT_ARGS.put(JTL_LISTENER_SERVICE_URL, null);
         DEFAULT_ARGS.put(JTL_API_TOKEN, null);
-        DEFAULT_ARGS.put(JTL_BATCH_SIZE, "1000");
+        DEFAULT_ARGS.put(JTL_BATCH_SIZE, "500");
     }
     private JtlReporterListenerService sender;
     private Set<String> fields;
@@ -62,6 +58,12 @@ public class JtlReporterBackendClient extends AbstractBackendListenerClient {
         try {
             this.fields = new HashSet<>();
             this.bulkSize = Integer.parseInt(context.getParameter(JTL_BATCH_SIZE));
+
+            if (bulkSize > 500) {
+                logger.error("Max batch size (batch.size) is 500. Terminating execution.");
+                throw new RuntimeException();
+            }
+
             this.timeoutMs = 30000;
 
             logger.info("About to request JWT token");
