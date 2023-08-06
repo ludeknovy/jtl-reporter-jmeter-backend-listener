@@ -4,28 +4,16 @@
   <groupId>jtlreporter</groupId>
   <artifactId>jmeter.backendlistener.jtlreporter</artifactId>
   <name>jmeter.backendlistener.jtlreporter</name>
-  <version>2.7.1</version>
-  <description>JMeter ElasticSearch Backend Listener is a JMeter plugin enabling you to send test results to an ElasticSearch engine. It is meant as an alternative live-monitoring tool to the built-in "InfluxDB" backend listener of JMeter.</description>
-  <url>https://github.com/delirius325/jmeter-elasticsearch-backend-listener</url>
+  <version>0.0.1</version>
+  <description>JMeter JtlReporter Backend Listener is a JMeter plugin enabling you to send test results to an JtlReporter.</description>
+  <url>https://github.com/ludeknovy/jtl-reporter-jmeter-plugin</url>
   <developers>
     <developer>
-      <id>delirius325</id>
-      <name>Anthony Gauthier</name>
-      <email>antho325@hotmail.com</email>
-      <url>http://www.github.com/delirius325</url>
-      <timezone>America/New_York</timezone>
+      <id>ludeknovy</id>
+      <url>https://jtlreporter.site</url>
+      <timezone>Europe/Prague</timezone>
     </developer>
   </developers>
-  <contributors>
-    <contributor>
-      <name>Christian Weber</name>
-      <url>http://www.github.com/siggitrain</url>
-      <timezone>MESZ</timezone>
-      <properties>
-        <github>siggitrain</github>
-      </properties>
-    </contributor>
-  </contributors>
   <licenses>
     <license>
       <name>The MIT License</name>
@@ -34,21 +22,10 @@
     </license>
   </licenses>
   <scm>
-    <url>https://github.com/delirius325/jmeter-elasticsearch-backend-listener.git</url>
+    <url>git@github.com:ludeknovy/jtl-reporter-jmeter-plugin.git</url>
   </scm>
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.sonatype.plugins</groupId>
-        <artifactId>nexus-staging-maven-plugin</artifactId>
-        <version>1.6.8</version>
-        <extensions>true</extensions>
-        <configuration>
-          <serverId>ossrh</serverId>
-          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-          <autoReleaseAfterClose>true</autoReleaseAfterClose>
-        </configuration>
-      </plugin>
       <plugin>
         <artifactId>maven-source-plugin</artifactId>
         <version>2.2.1</version>
@@ -168,12 +145,6 @@
       </build>
     </profile>
   </profiles>
-  <repositories>
-    <repository>
-      <id>jitpack.io</id>
-      <url>https://jitpack.io</url>
-    </repository>
-  </repositories>
   <dependencies>
     <dependency>
       <groupId>org.apache.jmeter</groupId>
@@ -262,6 +233,10 @@
         <exclusion>
           <artifactId>miglayout-swing</artifactId>
           <groupId>com.miglayout</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>commons-codec</artifactId>
+          <groupId>commons-codec</groupId>
         </exclusion>
         <exclusion>
           <artifactId>commons-collections</artifactId>
@@ -428,6 +403,10 @@
           <groupId>oro</groupId>
         </exclusion>
         <exclusion>
+          <artifactId>commons-codec</artifactId>
+          <groupId>commons-codec</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>jtidy</artifactId>
           <groupId>net.sf.jtidy</groupId>
         </exclusion>
@@ -556,16 +535,6 @@
       </exclusions>
     </dependency>
   </dependencies>
-  <distributionManagement>
-    <repository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
-    <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-  </distributionManagement>
   <properties>
     <org.apache.commons>3.9</org.apache.commons>
     <maven.compiler.target>1.8</maven.compiler.target>
@@ -576,7 +545,6 @@
     <junit.version>4.12</junit.version>
     <junit.jupiter.version>5.0.0</junit.jupiter.version>
     <junit.vintage.version>${junit.version}.0</junit.vintage.version>
-    <org.elasticsearch.client>6.7.1</org.elasticsearch.client>
     <junit.platform.version>1.0.0</junit.platform.version>
   </properties>
 </project>

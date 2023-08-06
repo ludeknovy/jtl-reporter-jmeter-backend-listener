@@ -37,9 +37,7 @@ public class JtlReporterBackendClient extends AbstractBackendListenerClient {
         DEFAULT_ARGS.put(JTL_BATCH_SIZE, "500");
     }
     private JtlReporterListenerService sender;
-    private Set<String> fields;
     private int bulkSize;
-    private long timeoutMs;
 
     private String itemId;
 
@@ -56,15 +54,12 @@ public class JtlReporterBackendClient extends AbstractBackendListenerClient {
     public void setupTest(BackendListenerContext context) throws Exception {
         logger.info("Setting up");
         try {
-            this.fields = new HashSet<>();
             this.bulkSize = Integer.parseInt(context.getParameter(JTL_BATCH_SIZE));
 
             if (bulkSize > 500) {
                 logger.error("Max batch size (batch.size) is 500. Terminating execution.");
                 throw new RuntimeException();
             }
-
-            this.timeoutMs = 30000;
 
             logger.info("About to request JWT token");
             String jwtToken = this.getJwtToken(context);
@@ -73,9 +68,7 @@ public class JtlReporterBackendClient extends AbstractBackendListenerClient {
             logger.info("New test run successfully registered with id " + startAsyncResponse.itemId);
             this.itemId = startAsyncResponse.itemId;
 
-
             this.sender = new JtlReporterListenerService(jwtToken, this.itemId, context.getParameter(JTL_LISTENER_SERVICE_URL));
-
 
             super.setupTest(context);
         } catch (Exception e) {
@@ -85,9 +78,9 @@ public class JtlReporterBackendClient extends AbstractBackendListenerClient {
 
     @Override
     public void teardownTest(BackendListenerContext context) throws Exception {
-        logger.info("test teardown");
+        logger.info(String.format("teardown, samples left: %d", this.sender.getListSize()));
         if (this.sender.getListSize() > 0) {
-            // this.sender.sendRequest();
+            this.sender.logSamples();
         }
         this.stopTestRun(context, this.itemId);
         super.teardownTest(context);
@@ -109,6 +102,7 @@ public class JtlReporterBackendClient extends AbstractBackendListenerClient {
 
         if (this.sender.getListSize() >= this.bulkSize) {
             try {
+                logger.info("sending samples to JtlReporter listener service");
                 this.sender.logSamples();
             } catch (Exception e) {
                 logger.error("Error occured while sending bulk request.", e);

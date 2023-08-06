@@ -32,7 +32,10 @@ public class JtlReporterMetric {
                 this.sampleResult.getAllThreads(),
                 this.sampleResult.getLatency(),
                 this.sampleResult.getConnectTime(),
-                this.sampleResult.getURL()
+                this.sampleResult.getURL(),
+                this.sampleResult.getThreadName(),
+                this.sampleResult.getSentBytes(),
+                this.sampleResult.getFirstAssertionFailureMessage()
         );
     }
 }

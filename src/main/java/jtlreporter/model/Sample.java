@@ -15,9 +15,28 @@ public class Sample {
     private Long latency;
     private Long connect;
     private String hostname;
+    private String threadName;
+    private String failureMessage;
+    private Long sentBytes;
 
 
-    public Sample(Long timeStamp, Long  elapsed, Long  bytes, String label, String responseCode, String responseMessage, Boolean success, Integer grpThreads, Integer allThreads, Long latency, Long connect, URL hostname) {
+    public Sample(
+            Long timeStamp,
+            Long  elapsed,
+            Long  bytes,
+            String label,
+            String responseCode,
+            String responseMessage,
+            Boolean success,
+            Integer grpThreads,
+            Integer allThreads,
+            Long latency,
+            Long connect,
+            URL hostname,
+            String threadName,
+            Long sentBytes,
+            String failureMessage
+    ) {
         this.timeStamp = timeStamp;
         this.elapsed = elapsed;
         this.bytes = bytes;
@@ -30,5 +49,8 @@ public class Sample {
         this.latency = latency;
         this.connect = connect;
         this.hostname = hostname.toString();
+        this.threadName = threadName;
+        this.sentBytes = sentBytes;
+        this.failureMessage = failureMessage;
     }
 }
