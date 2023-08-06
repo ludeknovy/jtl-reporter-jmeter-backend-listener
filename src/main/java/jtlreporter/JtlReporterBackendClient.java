@@ -28,9 +28,6 @@ public class JtlReporterBackendClient extends AbstractBackendListenerClient {
     private static final String JTL_PROJECT_NAME = "jtlreporter.project.name";
     private static final String JTL_SCENARIO_NAME = "jtlreporter.scenario.name";
     private static final String JTL_ENVIRONMENT = "jtlreporter.environment";
-
-    private static final long DEFAULT_TIMEOUT_MS = 200L;
-    private static final String SERVICE_NAME = "es";
     private static final Logger logger = LoggerFactory.getLogger(JtlReporterBackendClient.class);
     private static final AWSCredentialsProvider credentialsProvider = new DefaultAWSCredentialsProviderChain();
     private static final Map<String, String> DEFAULT_ARGS = new LinkedHashMap<>();
@@ -137,7 +134,7 @@ public class JtlReporterBackendClient extends AbstractBackendListenerClient {
         try (Response response = client.newCall(request).execute()) {
             if (response.code() == 200) {
                 Gson gson = new Gson();
-                logger.debug(response.body().toString());
+                assert response.body() != null;
                 JwtResponse jwtResponse = gson.fromJson(response.body().string(), JwtResponse.class);
                 String jwtToken = jwtResponse.jwtToken;
                 if (jwtToken == null) {
