@@ -1,0 +1,138 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version "7.1.2"
+    id 'java'
+    id 'java-library'
+    id 'project-report'
+    id 'maven-publish'
+    id 'idea'
+    id 'signing'
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+repositories {
+    mavenCentral()
+}
+
+
+sourceCompatibility = 11
+group = 'jtlreporter'
+version = '0.1'
+
+def title = 'JtlReporterBackendListener'
+def archiveName = 'jmeter-plugins-jtlreporter-listener'
+
+
+// There's a bug in JMeter leaving extra metadata right now. This is a workaround.
+class JMeterRule implements ComponentMetadataRule {
+    void execute(ComponentMetadataContext context) {
+        context.details.allVariants {
+            withDependencies {
+                removeAll { it.group == "org.apache.jmeter" && it.name == "bom" }
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation group: 'org.apache.jmeter', name: 'ApacheJMeter_core', version: '5.5'
+    implementation group: 'org.apache.jmeter', name: 'ApacheJMeter_java', version: '5.5'
+    implementation group: 'org.apache.jmeter', name: 'ApacheJMeter_components', version: '5.5'
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.11.0'
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
+    components {
+        withModule("org.apache.jmeter:ApacheJMeter_core", JMeterRule)
+        withModule("org.apache.jmeter:ApacheJMeter_java", JMeterRule)
+        withModule("org.apache.jmeter:ApacheJMeter_components", JMeterRule)
+        withModule("org.apache.jmeter:jorphan", JMeterRule)
+        withModule("org.apache.jmeter:ApacheJMeter", JMeterRule)
+        withModule("org.apache.jmeter:ApacheJMeter_http", JMeterRule)
+    }
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': title,
+                'Implementation-Version': archiveVersion,
+                'Main-Class': 'jtlreporter.JtlReporterBackendClient'
+    }
+
+    // Sets Classifier as sources.
+    archiveClassifier.set("sources")
+}
+
+shadowJar {
+    // Removes of the useless links.
+    minimize()
+    // Fix of the Class path contains multiple SLF4J bindings.
+    minimize
+            {
+                exclude(dependency('org.slf4j:.*:.*'))
+            }
+    archiveBaseName.set(archiveName)
+
+    manifest {
+        inheritFrom project.tasks.jar.manifest
+    }
+
+    // Removes the 'All' in Classifier to have downloadable artifact by default.
+    archiveClassifier.set(null)
+
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = 'jtlreporter'
+            artifactId = archiveName
+            version = version
+
+            from components.java
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = archiveName
+                description = 'JtlReporter Backend Listener'
+                url = 'https://jtlreporter.site'
+
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'ludeknovy'
+                        name = 'Luděk Nový'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git:github.com:ludeknovy/jtl-reporter-jmeter-plugin.git'
+                    url = 'https://github.com/ludeknovy/jtl-reporter-jmeter-plugin'
+                }
+            }
+        }
+    }
+
+}
+
+
+signing {
+    sign publishing.publications.mavenJava
+}
+
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
+}
