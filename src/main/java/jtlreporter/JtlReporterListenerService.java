@@ -64,7 +64,7 @@ public class JtlReporterListenerService {
         RequestBody body = RequestBody.create(jsonString, MediaType.parse("application/json"));
 
         Request request = new Request.Builder()
-                .url(listenerUrl + "/api/v2/test-run/log-samples")
+                .url(listenerUrl + "/api/v3/test-run/log-samples")
                 .post(body)
                 .addHeader("Content-Type", "application/json")
                 .addHeader(Constants.X_ACCESS_TOKEN, jwtToken)
