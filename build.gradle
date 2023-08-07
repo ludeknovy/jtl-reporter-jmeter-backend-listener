@@ -5,7 +5,6 @@ plugins {
     id 'project-report'
     id 'maven-publish'
     id 'idea'
-    id 'signing'
 }
 
 java {
@@ -134,11 +133,6 @@ publishing {
         }
     }
 
-}
-
-
-signing {
-    sign publishing.publications.mavenJava
 }
 
 javadoc {
