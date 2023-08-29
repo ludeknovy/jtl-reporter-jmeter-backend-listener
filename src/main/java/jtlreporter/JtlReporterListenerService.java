@@ -18,14 +18,18 @@ public class JtlReporterListenerService {
     private final String jwtToken;
     private final String itemId;
     private final String listenerUrl;
+
+    private final Integer bulkSize;
     private final List<Sample> sampleList;
     private final Gson gson;
 
-    public JtlReporterListenerService(String jwtToken, String itemId, String listenerUrl) {
+
+    public JtlReporterListenerService(String jwtToken, String itemId, String listenerUrl, Integer bulkSize) {
         this.jwtToken = jwtToken;
         this.itemId = itemId;
         this.sampleList = new LinkedList<Sample>();
         this.listenerUrl = listenerUrl;
+        this.bulkSize = bulkSize;
         this.gson = new Gson();
     }
 
@@ -55,13 +59,31 @@ public class JtlReporterListenerService {
     }
 
 
-    public void logSamples() {
+    public Boolean logSamples() {
+        try {
+            logger.info("sending samples to JtlReporter listener service");
+
+            int listSize = this.getListSize();
+            int lastElement = listSize >= bulkSize ? bulkSize : listSize;
+            List<Sample> subList = this.sampleList.subList(0, lastElement);
+
+            LogSamplesBody logSamplesBody = new LogSamplesBody(itemId, subList);
+            String jsonString = gson.toJson(logSamplesBody, LogSamplesBody.class);
+
+            RequestBody body = RequestBody.create(jsonString, MediaType.parse("application/json"));
+
+            this.logSamplesRequest(body);
+            subList.clear();
+            return true;
+        } catch (Exception e) {
+            logger.error("Error occurred while sending bulk request.", e);
+            return false;
+        }
+
+    }
+
+    private void logSamplesRequest(RequestBody body) {
         OkHttpClient client = new OkHttpClient();
-
-        LogSamplesBody logSamplesBody = new LogSamplesBody(itemId, this.sampleList);
-        String jsonString = gson.toJson(logSamplesBody, LogSamplesBody.class);
-
-        RequestBody body = RequestBody.create(jsonString, MediaType.parse("application/json"));
 
         Request request = new Request.Builder()
                 .url(listenerUrl + "/api/v3/test-run/log-samples")
@@ -72,12 +94,13 @@ public class JtlReporterListenerService {
 
         try (Response response = client.newCall(request).execute()) {
             if (response.code() != 201) {
-                logger.error("Unable to log samples");
                 logger.error("Request failed: " + response.code() + " code " + response.body().string());
+                throw new Exception("Request failed: " + response.code() + " code " + response.body().string());
             }
 
         } catch (IOException e) {
-            logger.error("Unable to start new test run " + e);
+            logger.error("Unable log samples " + e);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

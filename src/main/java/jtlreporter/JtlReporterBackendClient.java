@@ -1,21 +1,21 @@
-    package jtlreporter;
+package jtlreporter;
 
-    import com.google.gson.Gson;
-    import jtlreporter.model.Constants;
-    import jtlreporter.model.JwtResponse;
-    import jtlreporter.model.StartAsyncResponse;
-    import org.apache.jmeter.config.Arguments;
-    import org.apache.jmeter.samplers.SampleResult;
-    import org.apache.jmeter.visualizers.backend.AbstractBackendListenerClient;
-    import org.apache.jmeter.visualizers.backend.BackendListenerContext;
-    import org.slf4j.Logger;
-    import org.slf4j.LoggerFactory;
-    import okhttp3.*;
+import com.google.gson.Gson;
+import jtlreporter.model.Constants;
+import jtlreporter.model.JwtResponse;
+import jtlreporter.model.StartAsyncResponse;
+import org.apache.jmeter.config.Arguments;
+import org.apache.jmeter.samplers.SampleResult;
+import org.apache.jmeter.visualizers.backend.AbstractBackendListenerClient;
+import org.apache.jmeter.visualizers.backend.BackendListenerContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import okhttp3.*;
 
-    import java.io.IOException;
-    import java.util.LinkedHashMap;
-    import java.util.List;
-    import java.util.Map;
+import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class JtlReporterBackendClient extends AbstractBackendListenerClient {
 
@@ -28,6 +28,7 @@ public class JtlReporterBackendClient extends AbstractBackendListenerClient {
     private static final String JTL_ENVIRONMENT = "jtlreporter.environment";
     private static final Logger logger = LoggerFactory.getLogger(JtlReporterBackendClient.class);
     private static final Map<String, String> DEFAULT_ARGS = new LinkedHashMap<>();
+
     static {
         DEFAULT_ARGS.put(JTL_PROJECT_NAME, null);
         DEFAULT_ARGS.put(JTL_SCENARIO_NAME, null);
@@ -37,9 +38,9 @@ public class JtlReporterBackendClient extends AbstractBackendListenerClient {
         DEFAULT_ARGS.put(JTL_API_TOKEN, null);
         DEFAULT_ARGS.put(JTL_BATCH_SIZE, "500");
     }
+
     private JtlReporterListenerService sender;
     private int bulkSize;
-
     private String itemId;
 
     @Override
@@ -67,7 +68,7 @@ public class JtlReporterBackendClient extends AbstractBackendListenerClient {
             logger.info("New test run successfully registered with id " + startAsyncResponse.itemId);
             this.itemId = startAsyncResponse.itemId;
 
-            this.sender = new JtlReporterListenerService(jwtToken, this.itemId, context.getParameter(JTL_LISTENER_SERVICE_URL));
+            this.sender = new JtlReporterListenerService(jwtToken, this.itemId, context.getParameter(JTL_LISTENER_SERVICE_URL), bulkSize);
 
             super.setupTest(context);
         } catch (Exception e) {
@@ -79,7 +80,7 @@ public class JtlReporterBackendClient extends AbstractBackendListenerClient {
     public void teardownTest(BackendListenerContext context) throws Exception {
         logger.info(String.format("teardown, samples left: %d", this.sender.getListSize()));
         if (this.sender.getListSize() > 0) {
-            this.sender.logSamples();
+            this.waitUntilAllSamplesLogged(5);
         }
         this.stopTestRun(context, this.itemId);
         super.teardownTest(context);
@@ -94,21 +95,14 @@ public class JtlReporterBackendClient extends AbstractBackendListenerClient {
                 this.sender.addToList(metric.getMetric());
             } catch (Exception e) {
                 logger.error(
-                        "JtlReporter Listener was unable to add sampler to the list of samplers to send... More info in JMeter's console.");
+                        "JtlReporter Listener was unable to add sampler to the list of samplers to be sent... More info in JMeter's console.");
                 e.printStackTrace();
             }
         }
-
         if (this.sender.getListSize() >= this.bulkSize) {
-            try {
-                logger.info("sending samples to JtlReporter listener service");
-                this.sender.logSamples();
-            } catch (Exception e) {
-                logger.error("Error occured while sending bulk request.", e);
-            } finally {
-                this.sender.clearList();
-            }
+            this.sender.logSamples();
         }
+
     }
 
     private String getJwtToken(BackendListenerContext context) {
@@ -164,7 +158,7 @@ public class JtlReporterBackendClient extends AbstractBackendListenerClient {
         Request request = new Request.Builder()
                 .url(url)
                 .post(formBody)
-                .addHeader(Constants.X_ACCESS_TOKEN,  token)
+                .addHeader(Constants.X_ACCESS_TOKEN, token)
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
@@ -202,19 +196,28 @@ public class JtlReporterBackendClient extends AbstractBackendListenerClient {
         Request request = new Request.Builder()
                 .url(url)
                 .post(formBody)
-                .addHeader(Constants.X_ACCESS_TOKEN,  token)
+                .addHeader(Constants.X_ACCESS_TOKEN, token)
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
             if (response.code() != 200) {
                 logger.error("Request failed: " + response.code() + " code " + response.body().string());
             } else {
-               logger.info("Test run was successfully ended");
+                logger.info("Test run was successfully ended");
             }
 
         } catch (IOException e) {
             logger.error("Unable to stop test run " + e);
         }
+    }
 
+    private void waitUntilAllSamplesLogged(Integer retryCount) {
+        while (this.sender.getListSize() > 0 && retryCount != 0) {
+            Boolean result = this.sender.logSamples();
+            if (!result) {
+                --retryCount;
+                logger.info("Upload failed " + retryCount + " attempts left." );
+            }
+        }
     }
 }
