@@ -19,7 +19,7 @@ repositories {
 
 sourceCompatibility = 11
 group = 'jtlreporter'
-version = '0.2'
+version = '0.3'
 
 def title = 'JtlReporterBackendListener'
 def archiveName = 'jmeter-plugins-jtlreporter-listener'
