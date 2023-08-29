@@ -65,10 +65,8 @@ public class JtlReporterListenerService {
 
             int listSize = this.getListSize();
             int lastElement = listSize >= bulkSize ? bulkSize : listSize;
-            logger.info("last element " + lastElement);
             List<Sample> subList = this.sampleList.subList(0, lastElement);
 
-            logger.info("sublist " + subList.size());
             LogSamplesBody logSamplesBody = new LogSamplesBody(itemId, subList);
             String jsonString = gson.toJson(logSamplesBody, LogSamplesBody.class);
 

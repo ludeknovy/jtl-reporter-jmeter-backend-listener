@@ -213,7 +213,6 @@ public class JtlReporterBackendClient extends AbstractBackendListenerClient {
 
     private void waitUntilAllSamplesLogged(Integer retryCount) {
         while (this.sender.getListSize() > 0 && retryCount != 0) {
-            logger.info(String.valueOf(this.sender.getListSize()));
             Boolean result = this.sender.logSamples();
             if (!result) {
                 --retryCount;
