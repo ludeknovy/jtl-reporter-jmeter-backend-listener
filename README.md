@@ -11,8 +11,8 @@ reduce the processing time in comparison with JTL/CSV file upload.
 All the below-mentioned properties are required.
 * `jtlreporter.project.name` existing project name.
 * `jtlreporter.scenario.name`, existing scenario name.
-* `jtlreporter.environment` test environment. 
+* `jtlreporter.environment` test environment.
 * `jtlreporter.backend.url`, JtlReporter Backend url.
 * `jtlreporter.listener.service.url`, JtlReporter Listener Service url.
 * `jtlreporter.api.token`, [API token](https://jtlreporter.site/docs/guides/administration/api-token).
-* `jtlreporter.batch.size`, max value is 500. 
+* `jtlreporter.batch.size`, max value is 500.

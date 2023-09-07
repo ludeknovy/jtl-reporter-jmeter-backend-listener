@@ -3,27 +3,27 @@ package jtlreporter.model;
 import java.net.URL;
 
 public class Sample {
-    private Long timeStamp;
-    private Long elapsed;
-    private Long bytes;
-    private String label;
-    private String responseCode;
-    private String responseMessage;
-    private Boolean success;
-    private Integer grpThreads;
-    private Integer allThreads;
-    private Long latency;
-    private Long connect;
-    private String hostname;
-    private String threadName;
-    private String failureMessage;
-    private Long sentBytes;
+    private final Long timeStamp;
+    private final Long elapsed;
+    private final Long bytes;
+    private final String label;
+    private final String responseCode;
+    private final String responseMessage;
+    private final Boolean success;
+    private final Integer grpThreads;
+    private final Integer allThreads;
+    private final Long latency;
+    private final Long connect;
+    private final String hostname;
+    private final String threadName;
+    private final String failureMessage;
+    private final Long sentBytes;
 
 
     public Sample(
             Long timeStamp,
-            Long  elapsed,
-            Long  bytes,
+            Long elapsed,
+            Long bytes,
             String label,
             String responseCode,
             String responseMessage,
@@ -48,7 +48,7 @@ public class Sample {
         this.allThreads = allThreads;
         this.latency = latency;
         this.connect = connect;
-        this.hostname = hostname.toString();
+        this.hostname = hostname != null ? hostname.toString() : null;
         this.threadName = threadName;
         this.sentBytes = sentBytes;
         this.failureMessage = failureMessage;
