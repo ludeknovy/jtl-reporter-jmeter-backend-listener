@@ -7,11 +7,17 @@ reduce the processing time in comparison with JTL/CSV file upload.
 
 ![JtlReporter JMeter Backend Listener](./assets/listener_screenshot.png)
 
+## Build plugin from source
+```./gradle clean jar```
+
+Copy generated jar file from [build/libs/](build/libs) into `$JMETER_HOME/lib/ext/`
+
+
 ## Setup
 All the below-mentioned properties are required.
-* `jtlreporter.project.name` existing project name.
+* `jtlreporter.project.name`, existing project name.
 * `jtlreporter.scenario.name`, existing scenario name.
-* `jtlreporter.environment` test environment.
+* `jtlreporter.environment`, test environment.
 * `jtlreporter.backend.url`, JtlReporter Backend url.
 * `jtlreporter.listener.service.url`, JtlReporter Listener Service url.
 * `jtlreporter.api.token`, [API token](https://jtlreporter.site/docs/guides/administration/api-token).
