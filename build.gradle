@@ -19,7 +19,7 @@ repositories {
 
 sourceCompatibility = 11
 group = 'jtlreporter'
-version = '0.3'
+version = '0.4'
 
 def title = 'JtlReporterBackendListener'
 def archiveName = 'jmeter-plugins-jtlreporter-listener'
@@ -36,10 +36,12 @@ class JMeterRule implements ComponentMetadataRule {
     }
 }
 
+String jMeterVersion = '5.6.2'
+
 dependencies {
-    implementation group: 'org.apache.jmeter', name: 'ApacheJMeter_core', version: '5.5'
-    implementation group: 'org.apache.jmeter', name: 'ApacheJMeter_java', version: '5.5'
-    implementation group: 'org.apache.jmeter', name: 'ApacheJMeter_components', version: '5.5'
+    compileOnly group: 'org.apache.jmeter', name: 'ApacheJMeter_core', version: jMeterVersion
+    compileOnly group: 'org.apache.jmeter', name: 'ApacheJMeter_java', version: jMeterVersion
+    compileOnly group: 'org.apache.jmeter', name: 'ApacheJMeter_components', version: jMeterVersion
     implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.11.0'
     implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
     components {
@@ -61,6 +63,11 @@ jar {
 
     // Sets Classifier as sources.
     archiveClassifier.set("sources")
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+
 }
 
 shadowJar {
@@ -79,7 +86,6 @@ shadowJar {
 
     // Removes the 'All' in Classifier to have downloadable artifact by default.
     archiveClassifier.set(null)
-
 }
 
 publishing {

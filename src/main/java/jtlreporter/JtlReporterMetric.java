@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 public class JtlReporterMetric {
     private static final Logger logger = LoggerFactory.getLogger(JtlReporterMetric.class);
-    private SampleResult sampleResult;
+    private final SampleResult sampleResult;
 
     public JtlReporterMetric(SampleResult sr) {
         this.sampleResult = sr;
@@ -18,7 +18,7 @@ public class JtlReporterMetric {
      *
      * @return a Sample
      */
-    public Sample getMetric() throws Exception {
+    public Sample getMetric() {
 
         return new Sample(
                 this.sampleResult.getTimeStamp(),

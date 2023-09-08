@@ -4,20 +4,24 @@ import com.google.gson.Gson;
 import jtlreporter.model.Constants;
 import jtlreporter.model.JwtResponse;
 import jtlreporter.model.StartAsyncResponse;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.visualizers.backend.AbstractBackendListenerClient;
 import org.apache.jmeter.visualizers.backend.BackendListenerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import okhttp3.*;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class JtlReporterBackendClient extends AbstractBackendListenerClient {
+public class JtlReporterBackendClient extends AbstractBackendListenerClient implements Runnable {
 
     private static final String JTL_BACKEND_URL = "jtlreporter.backend.url";
     private static final String JTL_LISTENER_SERVICE_URL = "jtlreporter.listener.service.url";
@@ -94,9 +98,7 @@ public class JtlReporterBackendClient extends AbstractBackendListenerClient {
             try {
                 this.sender.addToList(metric.getMetric());
             } catch (Exception e) {
-                logger.error(
-                        "JtlReporter Listener was unable to add sampler to the list of samplers to be sent... More info in JMeter's console.");
-                e.printStackTrace();
+                logger.error("JtlReporter Listener was unable to add sampler '" + sr.getSampleLabel() + "' to the list of samplers to be sent... More info in JMeter's console.", e);
             }
         }
         if (this.sender.getListSize() >= this.bulkSize) {
@@ -216,8 +218,13 @@ public class JtlReporterBackendClient extends AbstractBackendListenerClient {
             Boolean result = this.sender.logSamples();
             if (!result) {
                 --retryCount;
-                logger.info("Upload failed " + retryCount + " attempts left." );
+                logger.info("Upload failed " + retryCount + " attempts left.");
             }
         }
+    }
+
+    @Override
+    public void run() {
+        /* nothing to do, since everything is handled in handleSampleResults() */
     }
 }
