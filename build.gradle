@@ -92,7 +92,7 @@ publishing {
     repositories {
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/ludeknovy/jtl-reporter-jmeter-plugin")
+            url = uri("https://maven.pkg.github.com/ludeknovy/jtl-reporter-jmeter-backend-listener")
             credentials {
                 username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
                 password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
