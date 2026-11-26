@@ -1,5 +1,5 @@
 # JtlReporter JMeter Backend Listener
-[JtlReporter](https://jtlreporter.site) Backend Listener for JMeter.
+[JtlReporter](https://jtlreporter.com) Backend Listener for JMeter.
 The plugin creates a new test run for a given project and scenario and steams the measurements
 into [JtlReporter listener service](https://github.com/ludeknovy/jtl-reporter-listener-service) in batches.
 After the test execution is finished it triggers the report processing. By using this plugin you can significantly
@@ -20,5 +20,5 @@ All the below-mentioned properties are required.
 * `jtlreporter.environment`, test environment.
 * `jtlreporter.backend.url`, JtlReporter Backend url.
 * `jtlreporter.listener.service.url`, JtlReporter Listener Service url.
-* `jtlreporter.api.token`, [API token](https://jtlreporter.site/docs/guides/administration/api-token).
+* `jtlreporter.api.token`, [API token](https://jtlreporter.com/docs/guides/administration/api-token).
 * `jtlreporter.batch.size`, max value is 500.

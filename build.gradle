@@ -117,7 +117,7 @@ publishing {
             pom {
                 name = archiveName
                 description = 'JtlReporter Backend Listener'
-                url = 'https://jtlreporter.site'
+                url = 'https://jtlreporter.com'
 
                 licenses {
                     license {
